@@ -23,7 +23,9 @@ def plot_total():
     plt.plot(f(x), "k")
     fig.canvas.draw()
     sine = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8).reshape(fig.canvas.get_width_height()[::-1] + (3,))
-    sine_no_border = copy.deepcopy(sine[:,150:640])
+    sine_no_border = copy.deepcopy(sine)
+    cut_map = np.argwhere(sine_no_border.sum(axis=0).sum(axis=1)!=sine_no_border.sum(axis=0).sum(axis=1)[0])
+    sine_no_border = sine_no_border[:,cut_map[0][0]:cut_map[-1][0],:]
     plt.close()
     sine_no_border[:,0:3,:] = np.zeros_like(sine_no_border[:,0:3,:])
     sine_no_border[:,-2:,:] = np.zeros_like(sine_no_border[:,-2:,:])
@@ -64,7 +66,11 @@ def get_img_array():
     plot_total()
     fig.canvas.draw()
     image = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8).reshape(fig.canvas.get_width_height()[::-1] + (3,))
-    image_no_border = copy.deepcopy(image)[60:-60,330:-305,]
+    image_no_border = copy.deepcopy(image)
+    cut_map = np.argwhere(image_no_border.sum(axis=0).sum(axis=1)!=image_no_border.sum(axis=0).sum(axis=1)[0])
+    image_no_border = image_no_border[:,cut_map[0][0]:cut_map[-1][0],:]
+    cut_map = np.argwhere(image_no_border.sum(axis=1).sum(axis=1)!=image_no_border.sum(axis=1).sum(axis=1)[0])
+    image_no_border = image_no_border[cut_map[0][0]:cut_map[-1][0],:,:]
     plt.close()
     return image_no_border
 
